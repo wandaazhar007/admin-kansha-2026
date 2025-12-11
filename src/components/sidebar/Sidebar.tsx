@@ -1,89 +1,119 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
+// src/components/sidebar/Sidebar.tsx
+import React, { useState } from "react";
 import styles from "./Sidebar.module.scss";
+import { NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faGauge,
+  faGaugeHigh,
   faBowlFood,
-  faLayerGroup,
+  faTags,
   faUserGroup,
+  faBars,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 
 const Sidebar: React.FC = () => {
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  const toggleMobileSidebar = () => {
+    setIsMobileOpen((prev) => !prev);
+  };
+
+  const closeMobileSidebar = () => {
+    setIsMobileOpen(false);
+  };
+
   return (
-    <aside className={styles.sidebar}>
-      <div className={styles.sidebarInner}>
-        <div className={styles.logoRow}>
-          <img
-            src="/logo-kansha-hibachi-sushi.png"
-            alt="Kansha Hibachi & Sushi"
-            className={styles.logoImage}
-          />
-          <div className={styles.logoTextBlock}>
-            <span className={styles.logoTitle}>Kansha</span>
-            <span className={styles.logoSubtitle}>Admin Panel</span>
+    <>
+      {/* Floating hamburger (mobile) */}
+      <button
+        className={styles.mobileFabToggle}
+        onClick={toggleMobileSidebar}
+        aria-label="Toggle sidebar"
+      >
+        <FontAwesomeIcon icon={faBars} />
+      </button>
+
+      <aside
+        className={`${styles.sidebar} ${isMobileOpen ? styles.sidebarMobileOpen : ""
+          }`}
+      >
+        <div className={styles.sidebarHeader}>
+          <div className={styles.brand}>
+            <img
+              src="/logo-kansha-hibachi-sushi.png"
+              alt="Kansha Hibachi & Sushi"
+              className={styles.logo}
+            />
+            <div className={styles.brandText}>
+              <span className={styles.brandTitle}>Kansha Admin</span>
+              <span className={styles.brandSubtitle}>Hibachi &amp; Sushi</span>
+            </div>
           </div>
+
+          <button
+            className={styles.mobileCloseButton}
+            onClick={toggleMobileSidebar}
+            aria-label="Close sidebar"
+          >
+            <FontAwesomeIcon icon={faXmark} />
+          </button>
         </div>
 
         <nav className={styles.nav}>
-          <span className={styles.navLabel}>Main</span>
-
           <NavLink
             to="/dashboard"
             className={({ isActive }) =>
-              isActive
-                ? `${styles.navItem} ${styles.navItemActive}`
-                : styles.navItem
+              `${styles.navItem} ${isActive ? styles.navItemActive : ""}`
             }
+            onClick={closeMobileSidebar}
           >
-            <FontAwesomeIcon icon={faGauge} className={styles.navIcon} />
+            <FontAwesomeIcon icon={faGaugeHigh} />
             <span>Dashboard</span>
           </NavLink>
 
-          <span className={styles.navLabel}>Management</span>
-
           <NavLink
-            to="/products"
+            to="/product"
             className={({ isActive }) =>
-              isActive
-                ? `${styles.navItem} ${styles.navItemActive}`
-                : styles.navItem
+              `${styles.navItem} ${isActive ? styles.navItemActive : ""}`
             }
+            onClick={closeMobileSidebar}
           >
-            <FontAwesomeIcon icon={faBowlFood} className={styles.navIcon} />
+            <FontAwesomeIcon icon={faBowlFood} />
             <span>Products</span>
           </NavLink>
 
           <NavLink
-            to="/categories"
+            to="/category"
             className={({ isActive }) =>
-              isActive
-                ? `${styles.navItem} ${styles.navItemActive}`
-                : styles.navItem
+              `${styles.navItem} ${isActive ? styles.navItemActive : ""}`
             }
+            onClick={closeMobileSidebar}
           >
-            <FontAwesomeIcon icon={faLayerGroup} className={styles.navIcon} />
+            <FontAwesomeIcon icon={faTags} />
             <span>Categories</span>
           </NavLink>
 
           <NavLink
-            to="/users"
+            to="/user"
             className={({ isActive }) =>
-              isActive
-                ? `${styles.navItem} ${styles.navItemActive}`
-                : styles.navItem
+              `${styles.navItem} ${isActive ? styles.navItemActive : ""}`
             }
+            onClick={closeMobileSidebar}
           >
-            <FontAwesomeIcon icon={faUserGroup} className={styles.navIcon} />
+            <FontAwesomeIcon icon={faUserGroup} />
             <span>Users</span>
           </NavLink>
         </nav>
+      </aside>
 
-        <div className={styles.sidebarFooter}>
-          <p className={styles.versionText}>© 2026 · Kansha Admin</p>
-        </div>
-      </div>
-    </aside>
+      {/* Overlay */}
+      <div
+        className={`${styles.mobileOverlay} ${isMobileOpen ? styles.mobileOverlayVisible : ""
+          }`}
+        onClick={closeMobileSidebar}
+      />
+    </>
   );
 };
 

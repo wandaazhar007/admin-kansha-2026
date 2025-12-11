@@ -1,171 +1,190 @@
-@use "../../styles/variables" as *;
-@use "../../styles/responsive" as *;
+// src/components/navbar/Navbar.module.scss
+@import "../../styles/_variables.scss";
+@import "../../styles/_responsive.scss";
 
 .navbar {
   position: sticky;
   top: 0;
-  z-index: $z-nav;
+  z-index: 20;
   width: 100%;
   background: linear-gradient(90deg,
-      rgba($color-primary-soft, 0.65),
-      rgba($color-secondary-soft, 0.65)),
-    $color-bg-elevated;
-  backdrop-filter: blur(18px);
-  border-bottom: 1px solid rgba($color-border-subtle, 0.9);
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+      $color-pastel-1,
+      $color-pastel-2,
+      $color-pastel-3,
+      $color-pastel-4 );
+  border-bottom: 1px solid $color-border-soft;
+  backdrop-filter: blur(10px);
 }
 
 .navbarInner {
-  @include container;
+  max-width: $layout-max-width;
+  margin: 0 auto;
+  padding: 0.65rem $layout-padding;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: $space-4;
-  padding-block: $space-3;
+  gap: 0.75rem;
 }
 
-// Brand (left)
 .brand {
   display: flex;
-  align-items: center;
-  gap: $space-3;
-}
-
-.brandIcon {
-  width: 36px;
-  height: 36px;
-  border-radius: 14px;
-  background: radial-gradient(circle at 20% 20%,
-      rgba(#ffffff, 0.92),
-      transparent 60%),
-    linear-gradient(135deg, $color-primary, $color-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: $color-text-on-dark;
-  box-shadow: $shadow-medium;
-  font-size: 1rem;
-  flex-shrink: 0;
-}
-
-.brandText {
-  display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0.05rem;
 }
 
 .brandTitle {
-  font-size: $font-size-lg;
-  font-weight: $font-weight-semibold;
-  letter-spacing: 0.02em;
+  font-size: 0.98rem;
+  font-weight: 600;
   color: $color-text-main;
 }
 
 .brandSubtitle {
-  font-size: $font-size-xs;
+  font-size: 0.78rem;
   color: $color-text-muted;
 }
 
-// Right side (date + notification + user)
-.navbarRight {
+/* Desktop actions */
+
+.actionsDesktop {
   display: flex;
   align-items: center;
-  gap: $space-3;
-  margin-left: auto;
+  gap: 0.6rem;
+
+  @include down-md {
+    display: none;
+  }
 }
 
-.dateBadge {
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba($color-bg-elevated, 0.9);
-  border: 1px solid rgba($color-border-subtle, 0.9);
-  font-size: $font-size-xs;
-  color: $color-text-muted;
-}
-
-.iconButton {
-  border: none;
-  outline: none;
-  cursor: pointer;
-  padding: 6px 9px;
-  border-radius: $radius-md;
-  background: rgba($color-bg-elevated, 0.95);
-  border: 1px solid rgba($color-border-subtle, 0.9);
+.actionButton {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-  color: $color-text-muted;
-  transition:
-    background-color 0.15s ease,
-    box-shadow 0.15s ease,
-    transform 0.08s ease;
+  gap: 0.4rem;
+  border-radius: $radius-full;
+  border: none;
+  padding: 0.45rem 0.95rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.92);
+  color: $color-text-main;
+  box-shadow: 0 6px 16px rgba(148, 163, 184, 0.4);
+  transition: transform 0.1s ease, box-shadow 0.15s ease, background 0.15s ease;
+
+  svg {
+    font-size: 0.9rem;
+  }
 
   &:hover {
-    background-color: $color-primary-soft;
-    box-shadow: $shadow-soft;
     transform: translateY(-1px);
-  }
-
-  &:active {
-    transform: translateY(0);
-    box-shadow: none;
+    box-shadow: 0 10px 24px rgba(148, 163, 184, 0.5);
+    background: #ffffff;
   }
 }
 
-.userChip {
-  display: inline-flex;
-  align-items: center;
-  gap: $space-2;
-  padding: 4px 10px 4px 4px;
-  border-radius: 999px;
-  background: rgba($color-bg-elevated, 0.95);
-  border: 1px solid rgba($color-border-subtle, 0.9);
-  box-shadow: $shadow-soft;
+.logoutButton {
+  background: linear-gradient(135deg, #fed7aa, #fecaca);
+
+  &:hover {
+    background: linear-gradient(135deg, #fecba1, #fca5a5);
+  }
 }
 
-.userAvatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, $color-secondary, $color-primary);
+/* Mobile actions */
+
+.actionsMobile {
+  position: relative;
   display: flex;
+  align-items: center;
+
+  @include up-md {
+    display: none;
+  }
+}
+
+.mobileMenuToggle {
+  position: relative;
+  width: 34px;
+  height: 26px;
+  border-radius: $radius-full;
+  border: none;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 6px 16px rgba(148, 163, 184, 0.45);
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: $color-text-on-dark;
-  font-size: $font-size-xs;
-  font-weight: $font-weight-semibold;
+  gap: 5px;
+  transition: transform 0.12s ease, box-shadow 0.18s ease, background 0.15s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(148, 163, 184, 0.55);
+    background: #ffffff;
+  }
 }
 
-.userInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
+.mobileMenuToggleBar {
+  display: block;
+  width: 60%;
+  height: 2px;
+  border-radius: $radius-full;
+  background: $color-text-muted;
+  transition: transform 0.18s ease, opacity 0.18s ease;
 }
 
-.userName {
-  font-size: $font-size-xs;
-  font-weight: $font-weight-semibold;
-  color: $color-text-main;
-}
-
-.userRole {
-  font-size: 0.65rem;
-  color: $color-text-muted;
-}
-
-// Responsive
-@include respond-down(sm) {
-  .navbarInner {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: $space-2;
+.mobileMenuToggleOpen {
+  .mobileMenuToggleBar:first-child {
+    transform: translateY(3px) rotate(45deg);
   }
 
-  .navbarRight {
-    width: 100%;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    gap: $space-2;
+  .mobileMenuToggleBar:last-child {
+    transform: translateY(-3px) rotate(-45deg);
+  }
+}
+
+.mobileMenuDropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.4rem);
+  min-width: 160px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.2);
+  padding: 0.4rem 0.35rem;
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.mobileMenuDropdownOpen {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.mobileMenuItem {
+  width: 100%;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  color: $color-text-main;
+  cursor: pointer;
+  transition: background 0.12s ease;
+
+  svg {
+    font-size: 0.85rem;
+    color: $color-text-muted;
+  }
+
+  &:hover {
+    background: #f1f5f9;
   }
 }

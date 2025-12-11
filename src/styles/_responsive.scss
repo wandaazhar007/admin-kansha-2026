@@ -1,108 +1,30 @@
-// ==============================
-// Responsive helpers & mixins
-// ==============================
+// src/styles/_responsive.scss
 
-@use "./variables" as *;
+$bp-sm: 640px;
+$bp-md: 768px;
+$bp-lg: 1024px;
+$bp-xl: 1280px;
 
-// Media query mixins
-// Usage: @include respond-up(md) { ... }
-//        @include respond-down(sm) { ... }
-
-@mixin respond-up($breakpoint) {
-  @if $breakpoint ==xs {
-    @media (min-width: $bp-xs) {
-      @content;
-    }
-  }
-
-  @else if $breakpoint ==sm {
-    @media (min-width: $bp-sm) {
-      @content;
-    }
-  }
-
-  @else if $breakpoint ==md {
-    @media (min-width: $bp-md) {
-      @content;
-    }
-  }
-
-  @else if $breakpoint ==lg {
-    @media (min-width: $bp-lg) {
-      @content;
-    }
-  }
-
-  @else if $breakpoint ==xl {
-    @media (min-width: $bp-xl) {
-      @content;
-    }
+@mixin down-sm {
+  @media (max-width: #{$bp-sm - 1}) {
+    @content;
   }
 }
 
-@mixin respond-down($breakpoint) {
-  @if $breakpoint ==xs {
-    @media (max-width: $bp-xs) {
-      @content;
-    }
-  }
-
-  @else if $breakpoint ==sm {
-    @media (max-width: $bp-sm) {
-      @content;
-    }
-  }
-
-  @else if $breakpoint ==md {
-    @media (max-width: $bp-md) {
-      @content;
-    }
-  }
-
-  @else if $breakpoint ==lg {
-    @media (max-width: $bp-lg) {
-      @content;
-    }
-  }
-
-  @else if $breakpoint ==xl {
-    @media (max-width: $bp-xl) {
-      @content;
-    }
+@mixin down-md {
+  @media (max-width: #{$bp-md - 1}) {
+    @content;
   }
 }
 
-// Container helper
-@mixin container {
-  width: 100%;
-  max-width: $layout-max-width;
-  margin-inline: auto;
-  padding-inline: $space-4;
-
-  @include respond-up(md) {
-    padding-inline: $space-6;
-  }
-
-  @include respond-up(lg) {
-    padding-inline: $space-8;
+@mixin up-md {
+  @media (min-width: $bp-md) {
+    @content;
   }
 }
 
-// Utility mixins
-
-@mixin truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-@mixin visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  border: 0;
+@mixin up-lg {
+  @media (min-width: $bp-lg) {
+    @content;
+  }
 }

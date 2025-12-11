@@ -1,32 +1,65 @@
-@use "../../styles/variables" as *;
-@use "../../styles/responsive" as *;
+// src/components/footer/Footer.module.scss
+@import "../../styles/_variables.scss";
+@import "../../styles/_responsive.scss";
 
 .footer {
+  width: 100%;
+  border-top: 1px solid $color-border-soft;
+  background: linear-gradient(90deg,
+      $color-pastel-1,
+      $color-pastel-2,
+      $color-pastel-3,
+      $color-pastel-4 );
   margin-top: auto;
-  padding: $space-3 0;
-  border-top: 1px solid rgba($color-border-subtle, 0.7);
-  background: rgba($color-bg-elevated, 0.85);
-  backdrop-filter: blur(10px);
 }
 
-.footer__inner {
-  @include container;
+.footerInner {
+  max-width: $layout-max-width;
+  margin: 0 auto;
+  padding: 0.7rem $layout-padding;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 0.15rem;
   text-align: center;
-  gap: 2px;
+
+  @include up-md {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+  }
 }
 
-.footer__text {
-  margin: 0;
-  font-size: $font-size-xs;
-  font-weight: $font-weight-medium;
+.textPrimary {
+  font-size: 0.82rem;
   color: $color-text-main;
 }
 
-.footer__subtext {
-  margin: 0;
-  font-size: $font-size-xs;
+.textSecondary {
+  font-size: 0.8rem;
   color: $color-text-muted;
+}
+
+.heart {
+  display: inline-block;
+  transform-origin: center;
+  animation: heartBeat 1.2s ease-in-out infinite;
+}
+
+@keyframes heartBeat {
+
+  0%,
+  20%,
+  60%,
+  100% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(1.18);
+  }
+
+  80% {
+    transform: scale(0.95);
+  }
 }
