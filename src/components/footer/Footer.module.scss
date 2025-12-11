@@ -1,0 +1,32 @@
+@use "../../styles/variables" as *;
+@use "../../styles/responsive" as *;
+
+.footer {
+  margin-top: auto;
+  padding: $space-3 0;
+  border-top: 1px solid rgba($color-border-subtle, 0.7);
+  background: rgba($color-bg-elevated, 0.85);
+  backdrop-filter: blur(10px);
+}
+
+.footer__inner {
+  @include container;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2px;
+}
+
+.footer__text {
+  margin: 0;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  color: $color-text-main;
+}
+
+.footer__subtext {
+  margin: 0;
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+}

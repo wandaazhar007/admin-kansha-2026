@@ -13,7 +13,7 @@ const Navbar: React.FC = () => {
 
   return (
     <header className={styles.navbar}>
-      <div className={styles.navbar__left}>
+      <div className={styles.navbarInner}>
         <div className={styles.brand}>
           <div className={styles.brandIcon}>
             <FontAwesomeIcon icon={faBowlFood} />
@@ -25,20 +25,20 @@ const Navbar: React.FC = () => {
             </span>
           </div>
         </div>
-      </div>
 
-      <div className={styles.navbar__right}>
-        <div className={styles.dateBadge}>{formattedDate}</div>
+        <div className={styles.navbarRight}>
+          <div className={styles.dateBadge}>{formattedDate}</div>
 
-        <button className={styles.iconButton} aria-label="Notifications">
-          <FontAwesomeIcon icon={faBell} />
-        </button>
+          <button className={styles.iconButton} aria-label="Notifications">
+            <FontAwesomeIcon icon={faBell} />
+          </button>
 
-        <div className={styles.userChip}>
-          <div className={styles.userAvatar}>K</div>
-          <div className={styles.userInfo}>
-            <span className={styles.userName}>Kansha Admin</span>
-            <span className={styles.userRole}>Manager</span>
+          <div className={styles.userChip}>
+            <div className={styles.userAvatar}>K</div>
+            <div className={styles.userInfo}>
+              <span className={styles.userName}>Kansha Admin</span>
+              <span className={styles.userRole}>Manager</span>
+            </div>
           </div>
         </div>
       </div>

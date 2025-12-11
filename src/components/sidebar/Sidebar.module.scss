@@ -1,0 +1,172 @@
+@use "../../styles/variables" as *;
+@use "../../styles/responsive" as *;
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: $layout-sidebar-width;
+  flex-shrink: 0;
+  background: linear-gradient(180deg,
+      rgba($color-primary-soft, 0.7),
+      rgba($color-secondary-soft, 0.7)),
+    $color-bg-elevated;
+  border-right: 1px solid $color-border-subtle;
+  box-shadow: 4px 0 18px rgba(15, 23, 42, 0.08);
+  z-index: $z-sidebar;
+
+  @include respond-down(md) {
+    position: relative;
+    height: auto;
+    width: 100%;
+    box-shadow: none;
+    border-right: none;
+    border-bottom: 1px solid $color-border-subtle;
+  }
+}
+
+.sidebarInner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: $space-4 $space-3;
+
+  @include respond-down(md) {
+    flex-direction: column;
+    gap: $space-3;
+  }
+}
+
+// Logo area
+.logoRow {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  margin-bottom: $space-5;
+
+  @include respond-down(md) {
+    margin-bottom: 0;
+  }
+}
+
+.logoImage {
+  width: 40px;
+  height: auto;
+  border-radius: $radius-md;
+  box-shadow: $shadow-soft;
+  background-color: #ffffff;
+}
+
+.logoTextBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.logoTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: $color-text-main;
+}
+
+.logoSubtitle {
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+}
+
+// Navigation
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  flex: 1;
+  margin-top: $space-3;
+
+  @include respond-down(md) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: $space-3;
+  }
+}
+
+.navLabel {
+  margin-top: $space-2;
+  margin-bottom: 4px;
+  font-size: $font-size-xs;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: $color-text-muted;
+
+  @include respond-down(md) {
+    width: 100%;
+    margin-top: 0;
+  }
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: 8px 10px;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  color: $color-text-main;
+  text-decoration: none;
+  border: 1px solid transparent;
+  background-color: rgba(#ffffff, 0.7);
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.08s ease,
+    box-shadow 0.18s ease;
+
+  &:hover {
+    background-color: #ffffff;
+    border-color: $color-border-subtle;
+    transform: translateY(-1px);
+    box-shadow: $shadow-soft;
+  }
+
+  @include respond-down(md) {
+    padding-inline: 10px;
+  }
+}
+
+.navItemActive {
+  background: linear-gradient(120deg,
+      rgba($color-primary, 0.18),
+      rgba($color-secondary, 0.22));
+  border-color: $color-border-strong;
+  color: $color-text-main;
+  box-shadow: $shadow-medium;
+
+  .navIcon {
+    color: $color-secondary;
+  }
+}
+
+.navIcon {
+  width: 16px;
+  color: $color-text-muted;
+}
+
+// Footer
+.sidebarFooter {
+  margin-top: auto;
+  padding-top: $space-4;
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+
+  @include respond-down(md) {
+    margin-top: $space-3;
+    border-top: 1px dashed $color-border-subtle;
+    padding-top: $space-3;
+  }
+}
+
+.versionText {
+  margin: 0;
+}

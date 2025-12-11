@@ -12,10 +12,17 @@ import {
 const Sidebar: React.FC = () => {
   return (
     <aside className={styles.sidebar}>
-      <div className={styles.sidebar__inner}>
-        <div className={styles.sidebar__logo}>
-          <span className={styles.logoDot} />
-          <span className={styles.logoText}>Kansha</span>
+      <div className={styles.sidebarInner}>
+        <div className={styles.logoRow}>
+          <img
+            src="/logo-kansha-hibachi-sushi.png"
+            alt="Kansha Hibachi & Sushi"
+            className={styles.logoImage}
+          />
+          <div className={styles.logoTextBlock}>
+            <span className={styles.logoTitle}>Kansha</span>
+            <span className={styles.logoSubtitle}>Admin Panel</span>
+          </div>
         </div>
 
         <nav className={styles.nav}>
@@ -72,8 +79,8 @@ const Sidebar: React.FC = () => {
           </NavLink>
         </nav>
 
-        <div className={styles.sidebar__footer}>
-          <p className={styles.versionText}>v1.0 · 2026</p>
+        <div className={styles.sidebarFooter}>
+          <p className={styles.versionText}>© 2026 · Kansha Admin</p>
         </div>
       </div>
     </aside>

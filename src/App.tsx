@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  Routes,
-  Route,
-  Navigate,
-  Outlet,
-} from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/navbar/Navbar";
 import Sidebar from "./components/sidebar/Sidebar";
@@ -23,7 +18,8 @@ const AdminLayout: React.FC = () => {
       <div className="app-shell__main">
         <Navbar />
         <main className="page-container">
-          <Outlet />
+          <h1>test</h1>
+          {/* Outlet will be used later when we add real pages */}
         </main>
         <Footer />
       </div>
@@ -34,20 +30,8 @@ const AdminLayout: React.FC = () => {
 const App: React.FC = () => {
   return (
     <Routes>
-      {/* Public route */}
-      {/* <Route path="/login" element={<LoginPage />} /> */}
-
-      {/* Admin layout routes (later you can wrap with auth protection) */}
-      <Route element={<AdminLayout />}>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        {/* <Route path="/dashboard" element={<DashboardPage />} /> */}
-        {/* <Route path="/products" element={<ProductPage />} /> */}
-        {/* <Route path="/categories" element={<CategoryPage />} /> */}
-        {/* <Route path="/users" element={<UserPage />} /> */}
-      </Route>
-
-      {/* Fallback */}
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      {/* For now, render AdminLayout for all paths */}
+      <Route path="/*" element={<AdminLayout />} />
     </Routes>
   );
 };
