@@ -1,0 +1,95 @@
+// ==============================
+// Kansha Admin — Design Tokens
+// ==============================
+
+// Colors – Kansha brand (pastel yellow & blue oriented)
+$color-primary: #ffcc4d; // warm pastel yellow
+$color-primary-soft: #fff3cc;
+
+$color-secondary: #4a90e2; // soft blue
+$color-secondary-soft: #e3f1ff;
+
+$color-accent: #5bd0b3; // mint/soft green
+$color-accent-soft: #e2fbf4;
+
+// Neutral palette
+$color-bg: #f5f6fb;
+$color-bg-elevated: #ffffff;
+$color-border-subtle: #e0e3ef;
+$color-border-strong: #c1c7e2;
+
+$color-text-main: #1f2430;
+$color-text-muted: #7a8092;
+$color-text-on-primary: #1f2430;
+$color-text-on-dark: #ffffff;
+
+// Semantic colors
+$color-success: #35b985;
+$color-success-soft: #e6faf2;
+
+$color-warning: #ffb020;
+$color-warning-soft: #fff4dd;
+
+$color-danger: #f45b6c;
+$color-danger-soft: #ffe6ea;
+
+// Shadows & radius
+$radius-xs: 4px;
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 20px;
+$radius-xl: 28px;
+
+$shadow-soft: 0 8px 20px rgba(15, 23, 42, 0.06);
+$shadow-medium: 0 14px 30px rgba(15, 23, 42, 0.12);
+
+// Typography
+$font-sans: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+  "Inter", "Segoe UI", sans-serif;
+
+$font-size-xs: 0.75rem; // 12px
+$font-size-sm: 0.875rem; // 14px
+$font-size-md: 1rem; // 16px
+$font-size-lg: 1.125rem; // 18px
+$font-size-xl: 1.25rem; // 20px
+$font-size-2xl: 1.5rem; // 24px
+$font-size-3xl: 1.875rem; // 30px
+
+$line-height-tight: 1.2;
+$line-height-normal: 1.5;
+$line-height-relaxed: 1.7;
+
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// Spacing scale
+$space-1: 4px;
+$space-2: 8px;
+$space-3: 12px;
+$space-4: 16px;
+$space-5: 20px;
+$space-6: 24px;
+$space-7: 28px;
+$space-8: 32px;
+$space-10: 40px;
+$space-12: 48px;
+
+// Layout sizing
+$layout-max-width: 1200px;
+$layout-sidebar-width: 260px;
+$layout-sidebar-width-collapsed: 72px;
+
+// Breakpoints
+$bp-xs: 480px;
+$bp-sm: 640px;
+$bp-md: 768px;
+$bp-lg: 1024px;
+$bp-xl: 1280px;
+
+// Z-index scale
+$z-nav: 50;
+$z-sidebar: 40;
+$z-overlay: 100;
+$z-toast: 200;
