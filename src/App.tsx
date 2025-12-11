@@ -1,15 +1,14 @@
+// src/App.tsx
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 
 import Navbar from "./components/navbar/Navbar";
 import Sidebar from "./components/sidebar/Sidebar";
 import Footer from "./components/footer/Footer";
+import ProtectedRoute from "./lib/ProtectedRoute";
 
-// import LoginPage from "./pages/login/LoginPage";
-// import DashboardPage from "./pages/dahsboard/DashboardPage";
-// import ProductPage from "./pages/product/ProductPage";
-// import CategoryPage from "./pages/category/CategoryPage";
-// import UserPage from "./pages/user/UserPage";
+import DashboardPage from "./pages/dahsboard/DashboardPage";
+import LoginPage from "./pages/login/LoginPage";
 
 const AdminLayout: React.FC = () => {
   return (
@@ -18,8 +17,8 @@ const AdminLayout: React.FC = () => {
       <div className="app-shell__main">
         <Navbar />
         <main className="page-container">
-          <h1>test</h1>
-          {/* Outlet will be used later when we add real pages */}
+          {/* Di sini semua halaman admin akan dirender */}
+          <Outlet />
         </main>
         <Footer />
       </div>
@@ -30,8 +29,33 @@ const AdminLayout: React.FC = () => {
 const App: React.FC = () => {
   return (
     <Routes>
-      {/* For now, render AdminLayout for all paths */}
-      <Route path="/*" element={<AdminLayout />} />
+      {/* Halaman LOGIN – tidak pakai layout admin */}
+      <Route path="/login" element={<LoginPage />} />
+
+      {/* Layout admin – semua butuh login */}
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      >
+        {/* Default: kalau ke "/", redirect ke "/dashboard" */}
+        <Route index element={<Navigate to="/dashboard" replace />} />
+
+        {/* Halaman dashboard utama */}
+        <Route path="dashboard" element={<DashboardPage />} />
+
+        {/* Nanti di sini bisa ditambah:
+            <Route path="product" element={<ProductPage />} />
+            <Route path="category" element={<CategoryPage />} />
+            <Route path="user" element={<UserPage />} />
+        */}
+      </Route>
+
+      {/* Fallback: kalau path tidak dikenal, arahkan ke /dashboard (atau /login) */}
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 };
