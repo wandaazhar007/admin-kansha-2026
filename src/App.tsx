@@ -1,35 +1,55 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from "react";
+import {
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+} from "react-router-dom";
 
-function App() {
-  const [count, setCount] = useState(0)
+import Navbar from "./components/navbar/Navbar";
+import Sidebar from "./components/sidebar/Sidebar";
+import Footer from "./components/footer/Footer";
 
+// import LoginPage from "./pages/login/LoginPage";
+// import DashboardPage from "./pages/dahsboard/DashboardPage";
+// import ProductPage from "./pages/product/ProductPage";
+// import CategoryPage from "./pages/category/CategoryPage";
+// import UserPage from "./pages/user/UserPage";
+
+const AdminLayout: React.FC = () => {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="app-shell">
+      <Sidebar />
+      <div className="app-shell__main">
+        <Navbar />
+        <main className="page-container">
+          <Outlet />
+        </main>
+        <Footer />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    </div>
+  );
+};
 
-export default App
+const App: React.FC = () => {
+  return (
+    <Routes>
+      {/* Public route */}
+      {/* <Route path="/login" element={<LoginPage />} /> */}
+
+      {/* Admin layout routes (later you can wrap with auth protection) */}
+      <Route element={<AdminLayout />}>
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        {/* <Route path="/dashboard" element={<DashboardPage />} /> */}
+        {/* <Route path="/products" element={<ProductPage />} /> */}
+        {/* <Route path="/categories" element={<CategoryPage />} /> */}
+        {/* <Route path="/users" element={<UserPage />} /> */}
+      </Route>
+
+      {/* Fallback */}
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+    </Routes>
+  );
+};
+
+export default App;
