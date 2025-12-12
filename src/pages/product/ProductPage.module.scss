@@ -223,14 +223,27 @@
 /* Table */
 
 .tableWrapper {
-  width: 100%;
+  // width: 100%;
+  // overflow-x: auto;
+
+  // width: 100%;
+  max-width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.86rem;
+
+  // paksa supaya di layar kecil muncul horizontal scroll,
+  // bukan memaksa kolom jadi terlalu sempit
+  min-width: 640px;
+
+  @include down-sm {
+    min-width: 560px;
+  }
 
   th,
   td {
@@ -277,11 +290,19 @@
 }
 
 .productImage {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  object-fit: cover;
-  box-shadow: 0 6px 12px rgba(148, 163, 184, 0.65);
+  // width: 40px;
+  // height: 40px;
+  // border-radius: 12px;
+  // object-fit: cover;
+  // box-shadow: 0 6px 12px rgba(148, 163, 184, 0.65);
+
+  // paksa supaya di layar kecil muncul horizontal scroll,
+  // bukan memaksa kolom jadi terlalu sempit
+  min-width: 640px;
+
+  @include down-sm {
+    min-width: 560px;
+  }
 }
 
 .productName {
@@ -492,4 +513,38 @@
   background: #fee2e2;
   color: #b91c1c;
   font-weight: 600;
+}
+
+
+/* Sedikit rapikan cell produk (thumb + nama) */
+.productCell {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.productImage {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  object-fit: cover;
+  box-shadow: 0 6px 12px rgba(148, 163, 184, 0.65);
+  flex-shrink: 0;
+}
+
+.productName {
+  font-weight: 600;
+  color: $color-text-main;
+}
+
+.productImagePlaceholder {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg,
+      #e5e7eb,
+      #f9fafb);
+  border: 1px dashed rgba(148, 163, 184, 0.7);
+  box-shadow: 0 6px 12px rgba(148, 163, 184, 0.4);
 }

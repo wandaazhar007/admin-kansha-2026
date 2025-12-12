@@ -2,10 +2,9 @@
 import React, { type FormEvent, useEffect, useState } from "react";
 import styles from "./FormProduct.module.scss";
 import type { Product, ProductPayload } from "../../types/product";
-import {
-  createProduct,
-  updateProduct,
-} from "../../services/products";
+import { createProduct, updateProduct } from "../../services/products";
+import type { Category } from "../../types/category";
+import { fetchCategories } from "../../services/categories";
 
 interface FormProductProps {
   mode: "create" | "edit";
@@ -17,6 +16,12 @@ interface FormProductProps {
 interface FieldErrors {
   name?: string;
   price?: string;
+  categoryId?: string;
+}
+
+interface LocalImagePreview {
+  file: File;
+  url: string;
 }
 
 const FormProduct: React.FC<FormProductProps> = ({
@@ -28,7 +33,10 @@ const FormProduct: React.FC<FormProductProps> = ({
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState<string>("");
+
+  // ini akan menampung ID kategori (string) dari dropdown
   const [categoryId, setCategoryId] = useState("");
+
   const [imageUrl, setImageUrl] = useState("");
   const [isAvailable, setIsAvailable] = useState(true);
 
@@ -36,12 +44,25 @@ const FormProduct: React.FC<FormProductProps> = ({
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
 
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [categoriesError, setCategoriesError] = useState<string | null>(null);
+
+  const [localImages, setLocalImages] = useState<LocalImagePreview[]>([]);
+  const [imageUploadError, setImageUploadError] = useState<string | null>(null);
+
+  // Init state dari product (edit)
   useEffect(() => {
     if (mode === "edit" && product) {
       setName(product.name ?? "");
       setDescription(product.description ?? "");
       setPrice(product.price != null ? String(product.price) : "");
-      setCategoryId(product.categoryId ?? "");
+
+      // baca id kategori dari beberapa kemungkinan:
+      const initialCategoryId =
+        product.categoryId || (product as any).category || "";
+      setCategoryId(initialCategoryId);
+
       setImageUrl(product.imageUrl ?? "");
       setIsAvailable(product.isAvailable ?? true);
     } else {
@@ -54,7 +75,28 @@ const FormProduct: React.FC<FormProductProps> = ({
     }
     setErrors({});
     setSubmitError(null);
+    setImageUploadError(null);
+    setLocalImages([]);
   }, [mode, product]);
+
+  // Load categories
+  useEffect(() => {
+    const loadCategories = async () => {
+      setCategoriesLoading(true);
+      setCategoriesError(null);
+      try {
+        const data = await fetchCategories();
+        setCategories(data);
+      } catch (err) {
+        console.error("Failed to fetch categories:", err);
+        setCategoriesError("Gagal memuat kategori. Coba refresh halaman.");
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+
+    loadCategories();
+  }, []);
 
   const validate = (): boolean => {
     const newErrors: FieldErrors = {};
@@ -72,6 +114,10 @@ const FormProduct: React.FC<FormProductProps> = ({
       }
     }
 
+    if (!categoryId.trim()) {
+      newErrors.categoryId = "Kategori wajib dipilih.";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -82,11 +128,19 @@ const FormProduct: React.FC<FormProductProps> = ({
 
     if (!validate()) return;
 
+    // Pastikan category TIDAK undefined
+    const categoryValue = categoryId.trim();
+
     const payload: ProductPayload = {
       name: name.trim(),
       description: description.trim() || undefined,
       price: Number(price),
-      categoryId: categoryId.trim(),
+
+      // inilah field yang dibutuhkan backend/Firestore
+      category: categoryValue,
+      // kita juga kirim cadangan sebagai categoryId
+      categoryId: categoryValue,
+
       imageUrl: imageUrl.trim() || undefined,
       isAvailable,
       isFeatured: product?.isFeatured ?? false,
@@ -103,14 +157,61 @@ const FormProduct: React.FC<FormProductProps> = ({
       setSubmitting(false);
       onSaved();
       onClose();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to save product:", err);
       setSubmitting(false);
+
+      const serverError = err?.response?.data;
+      if (serverError?.error) {
+        // tampilkan pesan error dari backend kalau ada
+        const details = Array.isArray(serverError.details)
+          ? serverError.details.map((d: any) => d?.message).filter(Boolean)
+          : [];
+        const message =
+          details.join(" ") || serverError.error || serverError.message;
+        if (message) {
+          setSubmitError(message);
+          return;
+        }
+      }
+
       setSubmitError("Gagal menyimpan produk. Coba lagi.");
     }
   };
 
   const title = mode === "create" ? "Add Product" : "Edit Product";
+
+  const handleFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setImageUploadError(null);
+
+    const newPreviews: LocalImagePreview[] = Array.from(files).map((file) => ({
+      file,
+      url: URL.createObjectURL(file),
+    }));
+
+    setLocalImages((prev) => [...prev, ...newPreviews]);
+
+    // Untuk sementara, gunakan gambar pertama sebagai imageUrl (preview)
+    if (!imageUrl && newPreviews.length > 0) {
+      setImageUrl(newPreviews[0].url);
+    }
+
+    e.target.value = "";
+  };
+
+  const handleRemovePreview = (idx: number) => {
+    setLocalImages((prev) => {
+      const copy = [...prev];
+      const removed = copy.splice(idx, 1)[0];
+      if (removed) {
+        URL.revokeObjectURL(removed.url);
+      }
+      return copy;
+    });
+  };
 
   return (
     <div className={styles.formCard}>
@@ -193,23 +294,40 @@ const FormProduct: React.FC<FormProductProps> = ({
 
           <div className={styles.field}>
             <label className={styles.label} htmlFor="categoryId">
-              Category ID (sementara)
+              Category
             </label>
-            <input
+            <select
               id="categoryId"
-              type="text"
-              className={styles.input}
+              className={`${styles.input} ${errors.categoryId ? styles.inputError : ""
+                }`}
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
-              placeholder="ex: hibachi, sushi, roll"
-            />
+              disabled={categoriesLoading}
+            >
+              <option value="">
+                {categoriesLoading
+                  ? "Loading categories..."
+                  : "Pilih kategori..."}
+              </option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+            {categoriesError && (
+              <p className={styles.helperText}>{categoriesError}</p>
+            )}
+            {errors.categoryId && (
+              <p className={styles.fieldErrorText}>{errors.categoryId}</p>
+            )}
           </div>
         </div>
 
-        {/* Image URL */}
+        {/* Main image URL */}
         <div className={styles.field}>
           <label className={styles.label} htmlFor="imageUrl">
-            Image URL (optional)
+            Main Image URL (optional)
           </label>
           <input
             id="imageUrl"
@@ -219,6 +337,45 @@ const FormProduct: React.FC<FormProductProps> = ({
             onChange={(e) => setImageUrl(e.target.value)}
             placeholder="https://example.com/menu-image.jpg"
           />
+          <p className={styles.helperText}>
+            Untuk saat ini API masih menggunakan 1 URL gambar utama. Field
+            upload di bawah ini untuk membantu kamu menyiapkan beberapa gambar.
+          </p>
+        </div>
+
+        {/* Upload image multiple */}
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor="imageFiles">
+            Upload Images (multiple)
+          </label>
+          <input
+            id="imageFiles"
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleFilesChange}
+            className={styles.fileInput}
+          />
+          {imageUploadError && (
+            <p className={styles.fieldErrorText}>{imageUploadError}</p>
+          )}
+
+          {localImages.length > 0 && (
+            <div className={styles.previewGrid}>
+              {localImages.map((item, idx) => (
+                <div key={idx} className={styles.previewItem}>
+                  <img src={item.url} alt={`preview-${idx}`} />
+                  <button
+                    type="button"
+                    className={styles.previewRemove}
+                    onClick={() => handleRemovePreview(idx)}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Is Available */}
