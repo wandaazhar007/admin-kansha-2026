@@ -2,9 +2,12 @@
 import apiClient from "./apiClient";
 import type { Category } from "../types/category";
 
-/**
- * Ambil semua kategori (public endpoint: GET /api/categories)
- */
+export interface CategoryPayload {
+  name: string;
+  description?: string;
+  sortOrder?: number;
+}
+
 export async function fetchCategories(): Promise<Category[]> {
   const response = await apiClient.get("/categories");
   const raw = response.data;
@@ -23,4 +26,23 @@ export async function fetchCategories(): Promise<Category[]> {
 
   console.error("Unexpected /categories response shape:", raw);
   return [];
+}
+
+export async function createCategory(
+  payload: CategoryPayload
+): Promise<Category> {
+  const response = await apiClient.post<Category>("/categories", payload);
+  return response.data;
+}
+
+export async function updateCategory(
+  id: string,
+  payload: CategoryPayload
+): Promise<Category> {
+  const response = await apiClient.put<Category>(`/categories/${id}`, payload);
+  return response.data;
+}
+
+export async function deleteCategory(id: string): Promise<void> {
+  await apiClient.delete(`/categories/${id}`);
 }

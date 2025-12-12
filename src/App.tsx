@@ -10,6 +10,7 @@ import ProtectedRoute from "./lib/ProtectedRoute";
 import DashboardPage from "./pages/dahsboard/DashboardPage";
 import LoginPage from "./pages/login/LoginPage";
 import ProductPage from "./pages/product/ProductPage";
+import CategoryPage from "./pages/category/CategoryPage";
 // import ProductPage from "./pages/product/ProductPage";
 // import CategoryPage from "./pages/category/CategoryPage";
 // import UserPage from "./pages/user/UserPage";
@@ -50,8 +51,8 @@ const App: React.FC = () => {
         <Route path="dashboard" element={<DashboardPage />} />
         {/* Nanti: */}
         <Route path="product" element={<ProductPage />} />
-        {/* <Route path="category" element={<CategoryPage />} />
-        <Route path="user" element={<UserPage />} /> */}
+        <Route path="category" element={<CategoryPage />} />
+        {/* <Route path="user" element={<UserPage />} /> */}
 
       </Route>
 
