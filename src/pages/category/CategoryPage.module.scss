@@ -458,3 +458,13 @@
   color: #b91c1c;
   font-weight: 600;
 }
+
+.successAlert {
+  margin-bottom: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: $radius-xl;
+  background: #ecfdf5;
+  color: #166534;
+  font-size: 0.86rem;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
