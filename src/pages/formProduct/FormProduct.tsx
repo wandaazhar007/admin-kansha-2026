@@ -5,6 +5,8 @@ import type { Product, ProductPayload } from "../../types/product";
 import { createProduct, updateProduct } from "../../services/products";
 import type { Category } from "../../types/category";
 import { fetchCategories } from "../../services/categories";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "../../lib/firebase";
 
 interface FormProductProps {
   mode: "create" | "edit";
@@ -122,6 +124,43 @@ const FormProduct: React.FC<FormProductProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
+  const uploadImagesAndGetUrls = async (): Promise<string[]> => {
+    // base = imageUrls lama (kalau sedang edit)
+    let base: string[] =
+      mode === "edit" && product?.imageUrls?.length
+        ? [...product.imageUrls]
+        : [];
+
+    // kalau user tidak pilih file baru:
+    if (!localImages.length) {
+      if (base.length) return base;
+      if (imageUrl.trim()) return [imageUrl.trim()];
+      return [];
+    }
+
+    const uploaded: string[] = [];
+
+    for (const item of localImages) {
+      const file = item.file;
+      const ext =
+        file.name.split(".").pop() || "jpg";
+      const uniqueName = `${Date.now()}-${Math.random()
+        .toString(36)
+        .slice(2)}.${ext}`;
+
+      const storageRef = ref(
+        storage,
+        `products/${uniqueName}`
+      );
+
+      const snap = await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(snap.ref);
+      uploaded.push(url);
+    }
+
+    return [...base, ...uploaded];
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setSubmitError(null);
@@ -129,31 +168,38 @@ const FormProduct: React.FC<FormProductProps> = ({
     if (!validate()) return;
 
     // Pastikan category TIDAK undefined
-    const categoryValue = categoryId.trim();
-
-    const payload: ProductPayload = {
-      name: name.trim(),
-      description: description.trim() || undefined,
-      price: Number(price),
-
-      // inilah field yang dibutuhkan backend/Firestore
-      category: categoryValue,
-      // kita juga kirim cadangan sebagai categoryId
-      categoryId: categoryValue,
-
-      imageUrl: imageUrl.trim() || undefined,
-      isAvailable,
-      isFeatured: product?.isFeatured ?? false,
-      sortOrder: product?.sortOrder,
-    };
-
     try {
       setSubmitting(true);
+
+      // 🔽 upload gambar & dapatkan array URL
+      const imageUrls = await uploadImagesAndGetUrls();
+
+      const categoryValue = categoryId.trim();
+
+      const payload: ProductPayload = {
+        name: name.trim(),
+        description: description.trim() || undefined,
+        price: Number(price),
+
+        category: categoryValue,
+        categoryId: categoryValue,
+
+        imageUrls: imageUrls.length ? imageUrls : undefined,
+        imageUrl:
+          imageUrls[0] ||
+          (imageUrl.trim() || undefined),
+
+        isAvailable,
+        isFeatured: product?.isFeatured ?? false,
+        sortOrder: product?.sortOrder,
+      };
+
       if (mode === "create") {
         await createProduct(payload);
       } else if (mode === "edit" && product) {
         await updateProduct(product.id, payload);
       }
+
       setSubmitting(false);
       onSaved();
       onClose();
@@ -163,12 +209,15 @@ const FormProduct: React.FC<FormProductProps> = ({
 
       const serverError = err?.response?.data;
       if (serverError?.error) {
-        // tampilkan pesan error dari backend kalau ada
         const details = Array.isArray(serverError.details)
-          ? serverError.details.map((d: any) => d?.message).filter(Boolean)
+          ? serverError.details
+            .map((d: any) => d?.message)
+            .filter(Boolean)
           : [];
         const message =
-          details.join(" ") || serverError.error || serverError.message;
+          details.join(" ") ||
+          serverError.error ||
+          serverError.message;
         if (message) {
           setSubmitError(message);
           return;
