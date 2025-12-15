@@ -1,8 +1,12 @@
 // src/styles/_globals.scss
+@use "./variables" as *;
+@use "./responsive" as *;
 
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
-@import "./_variables.scss";
-@import "./_responsive.scss";
+// @import "./_variables.scss";
+// @import "./_responsive.scss";
+
+
 
 *,
 *::before,

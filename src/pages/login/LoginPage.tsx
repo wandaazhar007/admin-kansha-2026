@@ -1,5 +1,5 @@
 // src/pages/login/LoginPage.tsx
-import React, { type FormEvent, useEffect, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../lib/AuthContext";
 import styles from "./LoginPage.module.scss";

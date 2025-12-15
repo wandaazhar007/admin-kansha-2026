@@ -1,6 +1,5 @@
-// src/components/sidebar/Sidebar.module.scss
-@import "../../styles/_variables.scss";
-@import "../../styles/_responsive.scss";
+@use "./../../styles/variables" as *;
+@use "../../styles/responsive" as *;
 
 $sidebar-width: 240px;
 
