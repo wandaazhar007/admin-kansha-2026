@@ -15,7 +15,7 @@
     "@fortawesome/free-regular-svg-icons": "^7.1.0",
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
     "@fortawesome/react-fontawesome": "^3.1.1",
-    "axios": "^1.13.5",
+    "axios": "^1.15.2",
     "firebase": "^12.6.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -34,7 +34,7 @@
     "globals": "^16.5.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
-    "vite": "^7.2.4"
+    "vite": "^7.3.2"
   },
   "overrides": {
     "immutable": "^5.1.5",
