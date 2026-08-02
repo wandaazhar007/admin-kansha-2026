@@ -149,7 +149,7 @@ const FormProduct: React.FC<FormProductProps> = ({
 
   const uploadImagesAndGetUrls = async (): Promise<string[]> => {
     // base = imageUrls lama (kalau sedang edit)
-    let base: string[] =
+    const base: string[] =
       mode === "edit" && product?.imageUrls?.length
         ? [...product.imageUrls]
         : [];
