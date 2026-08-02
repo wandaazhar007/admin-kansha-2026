@@ -12,6 +12,7 @@ import {
   fetchCategories,
   deleteCategory,
 } from "../../services/categories";
+import { logError } from "../../lib/logger";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
@@ -28,10 +29,8 @@ const MIN_LOADING_MS = 800;
 // helper: urutkan berdasarkan updatedAt / createdAt terbaru
 const sortCategoriesByRecent = (items: Category[]): Category[] => {
   return [...items].sort((a, b) => {
-    const aDateStr =
-      (a as any).updatedAt || (a as any).createdAt || "";
-    const bDateStr =
-      (b as any).updatedAt || (b as any).createdAt || "";
+    const aDateStr = a.updatedAt || a.createdAt || "";
+    const bDateStr = b.updatedAt || b.createdAt || "";
 
     if (!aDateStr && !bDateStr) return 0;
     if (!aDateStr) return 1;
@@ -87,14 +86,16 @@ const CategoryPage: React.FC = () => {
         setLoading(false);
       }
     } catch (err) {
-      console.error("Failed to fetch categories:", err);
+      logError("Failed to fetch categories:", err);
       setLoading(false);
       setLoadingError("Gagal memuat daftar kategori. Coba lagi.");
     }
   };
 
   useEffect(() => {
-    loadCategories();
+    // defer to a microtask so the fetch's setState calls aren't synchronous
+    // within the effect body (avoids the cascading-render lint warning)
+    void Promise.resolve().then(() => loadCategories());
 
     return () => {
       if (filterTimerRef.current) {
@@ -122,7 +123,7 @@ const CategoryPage: React.FC = () => {
 
     return base.filter((c) => {
       const name = c.name?.toLowerCase() ?? "";
-      const desc = (c as any).description?.toLowerCase() ?? "";
+      const desc = c.description?.toLowerCase() ?? "";
       return name.includes(term) || desc.includes(term);
     });
   }, [categories, searchTerm]);
@@ -134,11 +135,10 @@ const CategoryPage: React.FC = () => {
 
   const safePage = Math.min(currentPage, totalPages);
 
-  useEffect(() => {
-    if (currentPage !== safePage) {
-      setCurrentPage(safePage);
-    }
-  }, [safePage, currentPage]);
+  // clamp out-of-range page during render instead of an effect
+  if (currentPage !== safePage) {
+    setCurrentPage(safePage);
+  }
 
   const paginatedCategories = useMemo(() => {
     const startIndex = (safePage - 1) * PAGE_SIZE;
@@ -217,7 +217,7 @@ const CategoryPage: React.FC = () => {
       await loadCategories();
       setSuccessMessage("Category has been deleted successfully");
     } catch (err) {
-      console.error("Failed to delete category:", err);
+      logError("Failed to delete category:", err);
       setDeleting(false);
     }
   };
@@ -338,7 +338,7 @@ const CategoryPage: React.FC = () => {
                     <tr key={category.id}>
                       <td className={styles.tdName}>{category.name}</td>
                       <td className={styles.tdDescription}>
-                        {(category as any).description || (
+                        {category.description || (
                           <span className={styles.badgeMuted}>
                             No description
                           </span>

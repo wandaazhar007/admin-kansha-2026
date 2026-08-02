@@ -1,6 +1,7 @@
 // src/services/products.ts
 import apiClient from "./apiClient";
 import type { Product, ProductPayload } from "../types/product";
+import { logError } from "../lib/logger";
 
 /**
  * Ambil semua produk (public endpoint: GET /api/products)
@@ -8,7 +9,7 @@ import type { Product, ProductPayload } from "../types/product";
  */
 export async function fetchProducts(): Promise<Product[]> {
   const response = await apiClient.get("/products");
-  const raw = response.data;
+  const raw: unknown = response.data;
 
   // Beberapa bentuk respons umum:
   // 1. [ ... ]                         -> langsung array
@@ -20,15 +21,17 @@ export async function fetchProducts(): Promise<Product[]> {
     return raw as Product[];
   }
 
-  if (raw && Array.isArray((raw as any).data)) {
-    return (raw as any).data as Product[];
+  if (raw && typeof raw === "object") {
+    const obj = raw as Record<string, unknown>;
+    if (Array.isArray(obj.data)) {
+      return obj.data as Product[];
+    }
+    if (Array.isArray(obj.products)) {
+      return obj.products as Product[];
+    }
   }
 
-  if (raw && Array.isArray((raw as any).products)) {
-    return (raw as any).products as Product[];
-  }
-
-  console.error("Unexpected /products response shape:", raw);
+  logError("Unexpected /products response shape:", raw);
   return [];
 }
 

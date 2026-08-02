@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../../lib/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { logError } from "../../lib/logger";
 
 const Navbar: React.FC = () => {
   const { logout } = useAuth();
@@ -16,7 +17,7 @@ const Navbar: React.FC = () => {
       await logout();
       navigate("/login", { replace: true });
     } catch (error) {
-      console.error("Failed to logout:", error);
+      logError("Failed to logout:", error);
     }
   };
 

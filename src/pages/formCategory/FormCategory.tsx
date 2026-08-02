@@ -1,5 +1,6 @@
 // src/pages/formCategory/FormCategory.tsx
-import React, { type FormEvent, useEffect, useState } from "react";
+import React, { type FormEvent, useState } from "react";
+import axios from "axios";
 import styles from "./FormCategory.module.scss";
 import type { Category } from "../../types/category";
 import {
@@ -7,6 +8,13 @@ import {
   updateCategory,
   type CategoryPayload,
 } from "../../services/categories";
+import { logError } from "../../lib/logger";
+
+interface ApiErrorPayload {
+  error?: string;
+  message?: string;
+  details?: Array<{ message?: string }>;
+}
 
 interface FormCategoryProps {
   mode: "create" | "edit";
@@ -25,32 +33,24 @@ const FormCategory: React.FC<FormCategoryProps> = ({
   onClose,
   onSaved,
 }) => {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [sortOrder, setSortOrder] = useState<string>("");
+  // The parent only ever mounts this form fresh (it's conditionally
+  // rendered), so `mode`/`category` never change during its lifetime —
+  // lazy initial state covers what a sync effect would otherwise do.
+  const [name, setName] = useState(() =>
+    mode === "edit" && category ? category.name ?? "" : ""
+  );
+  const [description, setDescription] = useState(() =>
+    mode === "edit" && category ? category.description ?? "" : ""
+  );
+  const [sortOrder, setSortOrder] = useState<string>(() =>
+    mode === "edit" && category && category.sortOrder != null
+      ? String(category.sortOrder)
+      : ""
+  );
 
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (mode === "edit" && category) {
-      setName(category.name ?? "");
-      setDescription((category as any).description ?? "");
-      setSortOrder(
-        (category as any).sortOrder != null
-          ? String((category as any).sortOrder)
-          : ""
-      );
-    } else {
-      setName("");
-      setDescription("");
-      setSortOrder("");
-    }
-
-    setErrors({});
-    setSubmitError(null);
-  }, [mode, category]);
 
   const validate = (): boolean => {
     const newErrors: FieldErrors = {};
@@ -90,24 +90,22 @@ const FormCategory: React.FC<FormCategoryProps> = ({
 
       setSubmitting(false);
       onClose();
-    } catch (err: any) {
-      console.error("Failed to save category:", err);
+    } catch (err) {
+      logError("Failed to save category:", err);
       setSubmitting(false);
 
-      const serverError = err?.response?.data;
-      if (serverError?.error) {
-        const details = Array.isArray(serverError.details)
-          ? serverError.details
-            .map((d: any) => d?.message)
-            .filter(Boolean)
-          : [];
-        const message =
-          details.join(" ") ||
-          serverError.error ||
-          serverError.message;
-        if (message) {
-          setSubmitError(message);
-          return;
+      if (axios.isAxiosError<ApiErrorPayload>(err)) {
+        const serverError = err.response?.data;
+        if (serverError?.error) {
+          const details = Array.isArray(serverError.details)
+            ? serverError.details.map((d) => d?.message).filter(Boolean)
+            : [];
+          const message =
+            details.join(" ") || serverError.error || serverError.message;
+          if (message) {
+            setSubmitError(message);
+            return;
+          }
         }
       }
 

@@ -5,6 +5,7 @@ import { useAuth } from "../../lib/AuthContext";
 import styles from "./LoginPage.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faLock } from "@fortawesome/free-solid-svg-icons";
+import { logError } from "../../lib/logger";
 
 interface FieldErrors {
   email?: string;
@@ -57,7 +58,7 @@ export default function LoginPage() {
       await login(email.trim(), password);
       navigate("/dashboard", { replace: true });
     } catch (err: unknown) {
-      console.error("Login error:", err);
+      logError("Login error:", err);
       // Tandai error general (email / password salah)
       setErrors({
         general: "Email atau password salah. Silakan coba lagi.",

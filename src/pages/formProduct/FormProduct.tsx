@@ -1,4 +1,5 @@
 import React, { type FormEvent, useEffect, useState } from "react";
+import axios from "axios";
 import styles from "./FormProduct.module.scss";
 import type { Product, ProductPayload } from "../../types/product";
 import { createProduct, updateProduct } from "../../services/products";
@@ -6,6 +7,13 @@ import type { Category } from "../../types/category";
 import { fetchCategories } from "../../services/categories";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../lib/firebase";
+import { logError } from "../../lib/logger";
+
+interface ApiErrorPayload {
+  error?: string;
+  message?: string;
+  details?: Array<{ message?: string }>;
+}
 
 interface FormProductProps {
   mode: "create" | "edit";
@@ -65,7 +73,7 @@ const FormProduct: React.FC<FormProductProps> = ({
 
       // baca id kategori dari beberapa kemungkinan:
       const initialCategoryId =
-        product.categoryId || (product as any).category || "";
+        product.categoryId || product.category || "";
       setCategoryId(initialCategoryId);
 
       // ambil URL gambar lama
@@ -105,7 +113,7 @@ const FormProduct: React.FC<FormProductProps> = ({
         const data = await fetchCategories();
         setCategories(data);
       } catch (err) {
-        console.error("Failed to fetch categories:", err);
+        logError("Failed to fetch categories:", err);
         setCategoriesError("Gagal memuat kategori. Coba refresh halaman.");
       } finally {
         setCategoriesLoading(false);
@@ -209,22 +217,22 @@ const FormProduct: React.FC<FormProductProps> = ({
       setSubmitting(false);
       onSaved();
       onClose();
-    } catch (err: any) {
-      console.error("Failed to save product:", err);
+    } catch (err) {
+      logError("Failed to save product:", err);
       setSubmitting(false);
 
-      const serverError = err?.response?.data;
-      if (serverError?.error) {
-        const details = Array.isArray(serverError.details)
-          ? serverError.details
-            .map((d: any) => d?.message)
-            .filter(Boolean)
-          : [];
-        const message =
-          details.join(" ") || serverError.error || serverError.message;
-        if (message) {
-          setSubmitError(message);
-          return;
+      if (axios.isAxiosError<ApiErrorPayload>(err)) {
+        const serverError = err.response?.data;
+        if (serverError?.error) {
+          const details = Array.isArray(serverError.details)
+            ? serverError.details.map((d) => d?.message).filter(Boolean)
+            : [];
+          const message =
+            details.join(" ") || serverError.error || serverError.message;
+          if (message) {
+            setSubmitError(message);
+            return;
+          }
         }
       }
 
